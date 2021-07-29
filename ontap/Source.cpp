@@ -81,8 +81,10 @@ public:
 	}
 	void findleaf(node* root) { //tim` la
 		if (root) {
-			if (!root->left && !root->right)
+			if (!root->left && !root->right) {
 				cout << root->data << "\n";
+				return;
+			}
 			findleaf(root->left);
 			findleaf(root->right);
 		}
@@ -104,7 +106,7 @@ public:
 		}
 	}
 	void timla() {
-		findleafr(root);
+		findleaf(root);
 	}
 	void min(node* root) {
 		if (root) {
@@ -154,29 +156,93 @@ public:
 		xoanodemin(root);
 	}
 	void xoanodemax(node* root) {
-
+		while (root->right) {
+			if (!root->right->right) {
+				if (root->right->left) {
+					node* t = root->right;
+					root->right = t->left;
+					delete t;
+					return;
+				}
+				node* t = root->right;
+				delete t;
+				return;
+			}
+			root = root->right;
+		}
+	}
+	void delmax() {
+		xoanodemax(root);
 	}
 	void xoanodela(node* root) {
-
+		if (root) {
+			if (!root->left && !root->right) {
+				delete root;
+				return;
+			}
+			xoanodela(root->left);
+			xoanodela(root->right);
+		}
 	}
-	void xoanode(node* root,int x) {
+	void delleaf() {
+		xoanodela(root);
+	}
+	node* nodemin(node* root) {
+		while (root&&root->left) {
+			root = root->left;
+		}
+		return root;
+	}
+	node* xoanode(node* root,int x) {
+		if (root) {
+			if (root->data < x) {
+				root->right=xoanode(root->right, x);
+			}
+			else if (root->data > x)
+				root->left=xoanode(root->left, x);
+			else
+			{
+				if (!root->left) {
+					node* t = root->right;
+					delete root;
+					return t;
 
+
+				}
+				else if (!root->right) {
+					node* t = root->left;
+					delete root;
+					return t;
+				}
+				node* t = nodemin(root->right);
+				root->data = t->data;
+				root->right = xoanode(root->right, t->data);
+
+			}
+		}
+		return root;
+	}
+	void delnode() {
+		xoanode(root, 2);
 	}
 };
 int main() {
 	tree a;
-	a.add(3);
-	a.add(4);
-	a.add(1);
+	a.add(7);
 	a.add(2);
+	a.add(1);
+	a.add(4);
+	a.add(3);
 	a.add(5);
 	a.xuat();
 	//a.nho();
 	//a.tim(2);
 	//a.size1();
-	//a.timla();
+	a.timla();
 	//a.del();
 	//a.timmin();
-	a.delmin();
+	//a.delmin();
+	//a.delleaf();
+	a.delnode();
 	return 0;
  }
